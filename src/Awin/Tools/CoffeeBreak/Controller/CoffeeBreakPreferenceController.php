@@ -8,20 +8,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CoffeeBreakPreferenceController
 {
-    public function __construct()
-    {
-    }
 
     /**
      * Publishes the list of preferences in the requested format
      */
-    public function todayAction($format = "html"): Response
+    public function todayAction($format, CoffeeBreakPreferenceRepository $coffeeBreakPreferenceRepository): Response
     {
-        $repository = new CoffeeBreakPreferenceRepository();
-        $preferencesForToday = $repository->getPreferencesForToday();
 
-        $formattedPreferences = [];
-        $contentType = "text/html";
+        if ('' == $format || null == $format) {
+            $format = 'html';
+        }
+
+        $preferencesForToday = $coffeeBreakPreferenceRepository->getPreferencesForToday();
 
         switch ($format) {
             case "json":
@@ -34,8 +32,13 @@ class CoffeeBreakPreferenceController
                 $contentType = "text/xml";
                 break;
 
+            case "html":
+                $responseContent = $this->getHtmlForResponse($preferencesForToday);
+                $contentType = "text/html";
+                break;
+
             default:
-                $formattedPreferences[] = $this->getHtmlForResponse($preferencesForToday);
+                throw new \InvalidArgumentException("Unrecognised format");
         }
 
         return new Response($responseContent, 200, ['Content-Type' => $contentType]);
@@ -45,13 +48,11 @@ class CoffeeBreakPreferenceController
      * @param int $staffMemberId
      * @return Response
      */
-    public function notifyStaffMemberAction(int $staffMemberId): Response
+    public function notifyStaffMemberAction(int $staffMemberId, StaffMemberRepository $staffMemberRepository, CoffeeBreakPreferenceRepository $coffeeBreakPreferenceRepository): Response
     {
-        $staffMemberRepository = new StaffMemberRepository();
         $staffMember = $staffMemberRepository->find($staffMemberId);
 
-        $repository = new CoffeeBreakPreferenceRepository();
-        $preference = $repository->getPreferenceFor($staffMemberId, new \DateTime());
+        $preference = $coffeeBreakPreferenceRepository->getPreferencesForToday($staffMemberId);
 
         $notifier = new SlackNotifier();
         $notificationSent = $notifier->notifyStaffMember($staffMember, $preference);
