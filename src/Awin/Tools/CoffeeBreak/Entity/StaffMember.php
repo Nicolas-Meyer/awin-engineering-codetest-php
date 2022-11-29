@@ -46,14 +46,14 @@ class StaffMember
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -67,7 +67,7 @@ class StaffMember
     /**
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -81,7 +81,7 @@ class StaffMember
     /**
      * @return string
      */
-    public function getSlackIdentifier()
+    public function getSlackIdentifier(): string
     {
         return $this->SlackIdentifier;
     }
@@ -95,14 +95,14 @@ class StaffMember
     /**
      * @return ArrayCollection
      */
-    public function getPreferences()
+    public function getPreferences(): ArrayCollection
     {
         return $this->preferences;
     }
     /**
      * @param ArrayCollection $preferences
      */
-    public function setPreferences($preferences)
+    public function setPreferences(ArrayCollection $preferences)
     {
         $this->preferences = $preferences;
     }

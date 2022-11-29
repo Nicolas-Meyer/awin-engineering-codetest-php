@@ -12,7 +12,7 @@ class SlackNotifier
      * @param CoffeeBreakPreference $preference
      * @return bool
      */
-    public function notifyStaffMember(StaffMember $staffMember, CoffeeBreakPreference $preference)
+    public function notifyStaffMember(StaffMember $staffMember, CoffeeBreakPreference $preference): bool
     {
         /**
          * Imagine that this function:

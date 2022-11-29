@@ -78,7 +78,7 @@ class CoffeeBreakPreference
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -86,7 +86,7 @@ class CoffeeBreakPreference
     /**
      * @param string $type
      */
-    public function setType($type)
+    public function setType(string $type)
     {
         $this->type = $type;
     }
@@ -94,7 +94,7 @@ class CoffeeBreakPreference
     /**
      * @return string
      */
-    public function getSubType()
+    public function getSubType(): string
     {
         return $this->subType;
     }
@@ -102,7 +102,7 @@ class CoffeeBreakPreference
     /**
      * @param string $subType
      */
-    public function setSubType($subType)
+    public function setSubType(string $subType)
     {
         $this->subType = $subType;
     }
@@ -110,7 +110,7 @@ class CoffeeBreakPreference
     /**
      * @return StaffMember
      */
-    public function getRequestedBy()
+    public function getRequestedBy(): StaffMember
     {
         return $this->requestedBy;
     }
@@ -126,7 +126,7 @@ class CoffeeBreakPreference
     /**
      * @return \DateTime
      */
-    public function getRequestedDate()
+    public function getRequestedDate(): \DateTime
     {
         return $this->requestedDate;
     }
@@ -134,7 +134,7 @@ class CoffeeBreakPreference
     /**
      * @param \DateTime $requestedDate
      */
-    public function setRequestedDate($requestedDate)
+    public function setRequestedDate(\DateTime $requestedDate)
     {
         $this->requestedDate = $requestedDate;
     }
@@ -151,12 +151,12 @@ class CoffeeBreakPreference
         }
     }
 
-    public function getDetails()
+    public function getDetails(): array
     {
         return $this->details;
     }
 
-    public function getAsXmlElement()
+    public function getAsXmlElement(): string
     {
         $xml = "<preference type='".$this->getType()."' subtype='".$this->getSubType()."'>";
         $xml .= "<requestedBy>".$this->getRequestedBy()->getName()."</requestedBy>";
@@ -165,7 +165,7 @@ class CoffeeBreakPreference
         return $xml;
     }
 
-    public function getAsArray()
+    public function getAsArray(): array
     {
         return [
             "type" => $this->getType(),
@@ -177,7 +177,7 @@ class CoffeeBreakPreference
         ];
     }
 
-    public function getAsListElement()
+    public function getAsListElement(): string
     {
         $detailsString = implode(
             ",",

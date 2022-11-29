@@ -15,27 +15,27 @@ class CoffeeBreakPreferenceController
     /**
      * Publishes the list of preferences in the requested format
      */
-    public function todayAction($format = "html")
+    public function todayAction($format = "html"): Response
     {
         $repository = new CoffeeBreakPreferenceRepository();
-        $t = $repository->getPreferencesForToday();
+        $preferencesForToday = $repository->getPreferencesForToday();
 
         $formattedPreferences = [];
         $contentType = "text/html";
 
         switch ($format) {
             case "json":
-                $responseContent = $this->getJsonForResponse($t);
+                $responseContent = $this->getJsonForResponse($preferencesForToday);
                 $contentType = "application/json";
                 break;
 
             case "xml":
-                $responseContent = $this->getXmlForResponse($t);
+                $responseContent = $this->getXmlForResponse($preferencesForToday);
                 $contentType = "text/xml";
                 break;
 
             default:
-                $formattedPreferences[] = $this->getHtmlForResponse($t);
+                $formattedPreferences[] = $this->getHtmlForResponse($preferencesForToday);
         }
 
         return new Response($responseContent, 200, ['Content-Type' => $contentType]);
@@ -45,16 +45,16 @@ class CoffeeBreakPreferenceController
      * @param int $staffMemberId
      * @return Response
      */
-    public function notifyStaffMemberAction($staffMemberId)
+    public function notifyStaffMemberAction(int $staffMemberId): Response
     {
         $staffMemberRepository = new StaffMemberRepository();
         $staffMember = $staffMemberRepository->find($staffMemberId);
 
         $repository = new CoffeeBreakPreferenceRepository();
-        $p = $repository->getPreferenceFor($staffMemberId, new \DateTime());
+        $preference = $repository->getPreferenceFor($staffMemberId, new \DateTime());
 
         $notifier = new SlackNotifier();
-        $notificationSent = $notifier->notifyStaffMember($staffMember, $p);
+        $notificationSent = $notifier->notifyStaffMember($staffMember, $preference);
 
         return new Response($notificationSent ? "OK" : "NOT OK", 200);
     }
@@ -81,7 +81,7 @@ class CoffeeBreakPreferenceController
         return $preferencesNode->asXML();
     }
 
-    private function getHtmlForResponse(array $preferences)
+    private function getHtmlForResponse(array $preferences): string
     {
         $html = "<ul>";
         foreach ($preferences as $preference) {
