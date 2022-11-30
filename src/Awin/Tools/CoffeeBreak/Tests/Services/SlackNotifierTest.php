@@ -12,7 +12,7 @@ class SlackNotifierTest extends TestCase
         $staffMember->setSlackIdentifier("ABC123");
         $preference = new CoffeeBreakPreference("drink", "coffee", $staffMember);
 
-        $notificationService = new \Awin\Tools\CoffeeBreak\Services\SlackNotifier();
+        $notificationService = new \Awin\Tools\CoffeeBreak\Services\Notifiers\SlackNotifier();
         $status = $notificationService->notifyStaffMember($staffMember, $preference);
 
         $this->assertTrue($status);
@@ -22,7 +22,7 @@ class SlackNotifierTest extends TestCase
     {
         $staffMember = new StaffMember();
         $preference = new CoffeeBreakPreference("drink", "tea", $staffMember);
-        $notificationService = new \Awin\Tools\CoffeeBreak\Services\SlackNotifier();
+        $notificationService = new \Awin\Tools\CoffeeBreak\Services\Notifiers\SlackNotifier();
 
         $this->expectException(\RuntimeException::class);
         $status = $notificationService->notifyStaffMember($staffMember, $preference);

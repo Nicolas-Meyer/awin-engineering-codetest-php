@@ -1,11 +1,12 @@
 <?php
-namespace Awin\Tools\CoffeeBreak\Services;
+namespace Awin\Tools\CoffeeBreak\Services\Notifiers;
 
-use Awin\Tools\CoffeeBreak\Entity\StaffMember;
 use Awin\Tools\CoffeeBreak\Entity\CoffeeBreakPreference;
+use Awin\Tools\CoffeeBreak\Entity\StaffMember;
+use Awin\Tools\CoffeeBreak\Services\Notifiers\Interfaces\NotifierInterface;
 use PHPUnit\Framework\MockObject\RuntimeException;
 
-class SlackNotifier
+class SlackNotifier implements NotifierInterface
 {
     /**
      * @param StaffMember $staffMember
