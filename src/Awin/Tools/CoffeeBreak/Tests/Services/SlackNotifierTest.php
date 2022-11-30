@@ -10,7 +10,7 @@ class SlackNotifierTest extends TestCase
     {
         $staffMember = new StaffMember();
         $staffMember->setSlackIdentifier("ABC123");
-        $preference = new CoffeeBreakPreference("drink", "coffee", $staffMember);
+        $preference[] = new CoffeeBreakPreference("drink", "coffee", $staffMember);
 
         $notificationService = new \Awin\Tools\CoffeeBreak\Services\Notifiers\SlackNotifier();
         $status = $notificationService->notifyStaffMember($staffMember, $preference);
@@ -21,7 +21,7 @@ class SlackNotifierTest extends TestCase
     public function testThrowsExceptionWhenCannotNotify()
     {
         $staffMember = new StaffMember();
-        $preference = new CoffeeBreakPreference("drink", "tea", $staffMember);
+        $preference[] = new CoffeeBreakPreference("drink", "tea", $staffMember);
         $notificationService = new \Awin\Tools\CoffeeBreak\Services\Notifiers\SlackNotifier();
 
         $this->expectException(\RuntimeException::class);

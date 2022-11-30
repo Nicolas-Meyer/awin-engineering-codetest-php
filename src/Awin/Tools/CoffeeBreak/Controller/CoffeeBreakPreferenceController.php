@@ -4,6 +4,7 @@ namespace Awin\Tools\CoffeeBreak\Controller;
 use Awin\Tools\CoffeeBreak\Repository\CoffeeBreakPreferenceRepository;
 use Awin\Tools\CoffeeBreak\Repository\StaffMemberRepository;
 use Awin\Tools\CoffeeBreak\Services\Notifiers\SlackNotifier;
+use PHPUnit\Framework\MockObject\RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -31,12 +32,14 @@ class CoffeeBreakPreferenceController
         $serializer = new Serializer($normalizers, $encoders);
         switch ($format) {
             case "json":
-                $responseContent = $serializer->serialize($preferencesForToday, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['asListElement']]);
+                $responseContent = $serializer->serialize($preferencesForToday, 'json',
+                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['asListElement', 'preferredNotifier']]);
                 $contentType = "application/json";
                 break;
 
             case "xml":
-                $responseContent = $serializer->serialize($preferencesForToday, 'xml', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['asListElement']]);
+                $responseContent = $serializer->serialize($preferencesForToday, 'xml',
+                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['asListElement', 'preferredNotifier']]);
                 $contentType = "text/xml";
                 break;
 
@@ -61,11 +64,25 @@ class CoffeeBreakPreferenceController
     {
         $staffMember = $staffMemberRepository->find($staffMemberId);
 
-        $preference = $coffeeBreakPreferenceRepository->getPreferencesForToday($staffMemberId)->toArray();
+        if (!$staffMember) {
+            return new Response("Invalid staff member", 422);
+        }
 
-        $notifier = new SlackNotifier();
+        $preference = $coffeeBreakPreferenceRepository->getPreferencesForToday($staffMemberId);
+
+        if (!$preference) {
+            return new Response("Invalid preference for this staff member today", 422);
+        }
+
+        $notifier = $staffMember->getPreferredNotifier();
+
+        if (!$notifier) {
+            throw new RuntimeException("Cannot send notification - no way to contact staff member");
+        }
+
         $notificationSent = $notifier->notifyStaffMember($staffMember, $preference);
 
+        //This will always be true in the current implementation
         return new Response($notificationSent ? "OK" : "NOT OK", 200);
     }
 

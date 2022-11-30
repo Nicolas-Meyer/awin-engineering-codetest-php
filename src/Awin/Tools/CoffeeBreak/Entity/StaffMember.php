@@ -1,6 +1,9 @@
 <?php
 namespace Awin\Tools\CoffeeBreak\Entity;
 
+use Awin\Tools\CoffeeBreak\Services\Notifiers\EmailNotifier;
+use Awin\Tools\CoffeeBreak\Services\Notifiers\Interfaces\NotifierInterface;
+use Awin\Tools\CoffeeBreak\Services\Notifiers\SlackNotifier;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -106,4 +109,20 @@ class StaffMember
     {
         $this->preferences = $preferences;
     }
+
+    public function getPreferredNotifier() : ?NotifierInterface
+    {
+
+        if (!empty($this->getSlackIdentifier())) {
+            return new SlackNotifier();
+        }
+
+        if (!empty($this->getEmail())) {
+            return new EmailNotifier();
+        }
+
+        return null;
+
+    }
+
 }

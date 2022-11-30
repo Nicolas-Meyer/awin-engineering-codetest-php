@@ -10,7 +10,7 @@ class EmailNotifierTest extends TestCase
     {
         $staffMember = new StaffMember();
         $staffMember->setEmail("employee@awin.com");
-        $preference = new CoffeeBreakPreference("drink", "coffee", $staffMember);
+        $preference[] = new CoffeeBreakPreference("drink", "coffee", $staffMember);
 
         $notificationService = new \Awin\Tools\CoffeeBreak\Services\Notifiers\EmailNotifier();
         $status = $notificationService->notifyStaffMember($staffMember, $preference);
@@ -21,7 +21,7 @@ class EmailNotifierTest extends TestCase
     public function testThrowsExceptionWhenCannotNotify()
     {
         $staffMember = new StaffMember();
-        $preference = new CoffeeBreakPreference("drink", "tea", $staffMember);
+        $preference[] = new CoffeeBreakPreference("drink", "tea", $staffMember);
         $notificationService = new \Awin\Tools\CoffeeBreak\Services\Notifiers\EmailNotifier();
 
         $this->expectException(\RuntimeException::class);

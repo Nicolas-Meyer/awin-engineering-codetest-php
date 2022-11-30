@@ -8,13 +8,18 @@ use PHPUnit\Framework\MockObject\RuntimeException;
 
 class EmailNotifier implements Interfaces\NotifierInterface
 {
-
-    public function notifyStaffMember(StaffMember $staffMember, CoffeeBreakPreference $preference): bool
+    /**
+     * @param StaffMember $staffMember
+     * @param CoffeeBreakPreference[] $preference
+     * @return bool
+     */
+    public function notifyStaffMember(StaffMember $staffMember, array $preference): bool
     {
 
         if (empty($staffMember->getEmail())) {
             throw new RuntimeException("Cannot send notification - no email address");
         }
+
         return true;
     }
 }

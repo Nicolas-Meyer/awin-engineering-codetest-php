@@ -10,10 +10,10 @@ class SlackNotifier implements NotifierInterface
 {
     /**
      * @param StaffMember $staffMember
-     * @param CoffeeBreakPreference $preference
+     * @param CoffeeBreakPreference[] $preference
      * @return bool
      */
-    public function notifyStaffMember(StaffMember $staffMember, CoffeeBreakPreference $preference): bool
+    public function notifyStaffMember(StaffMember $staffMember, array $preference): bool
     {
         /**
          * Imagine that this function:
