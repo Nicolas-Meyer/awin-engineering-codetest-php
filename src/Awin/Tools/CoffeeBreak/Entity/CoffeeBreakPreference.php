@@ -155,9 +155,9 @@ class CoffeeBreakPreference
         $this->details = json_encode($parsedDetails);
     }
 
-    public function getDetails(): ?string
+    public function getDetails()
     {
-        return $this->details;
+        return json_decode($this->details);
     }
 
 //    public function getAsXmlElement(): string

@@ -28,7 +28,9 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
                 ]
             },
             "requestedDate": null,
-            "details": "{\"flavour\":false}"
+            "details": {
+                   "flavour":false
+            }
         }';
 
         $this->assertEquals('200', $response->getStatusCode());
@@ -52,7 +54,7 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
                     <preferences/>
                 </requestedBy>
                 <requestedDate/>
-                <details>{"flavour":false}</details>
+                <details><flavour>0</flavour></details>
             </response>';
 
 
