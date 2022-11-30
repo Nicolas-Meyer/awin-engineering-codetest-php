@@ -6,6 +6,7 @@ use Awin\Tools\CoffeeBreak\Controller\CoffeeBreakPreferenceController;
 use Awin\Tools\CoffeeBreak\Entity\CoffeeBreakPreference;
 use Awin\Tools\CoffeeBreak\Entity\StaffMember;
 use Awin\Tools\CoffeeBreak\Repository\CoffeeBreakPreferenceRepository;
+use Awin\Tools\CoffeeBreak\Repository\StaffMemberRepository;
 use PHPUnit\Framework\TestCase;
 
 class CoffeeBreakPreferenceControllerTest extends TestCase
@@ -97,6 +98,50 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
 
     }
 
+    public function testNotifyStaffMemberActionThroughEmail()
+    {
+        $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
+        $response = $coffeeBreakPreferenceController->notifyStaffMemberAction(1, $this->getDefaultStaffMemberRepository("employee@awin.com", ""), $this->getDefaultCoffeeBreakPreferenceRepository());
+        $this->assertEquals('200', $response->getStatusCode());
+    }
+
+    public function testNotifyStaffMemberActionThroughSlack()
+    {
+        $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
+        $response = $coffeeBreakPreferenceController->notifyStaffMemberAction(1, $this->getDefaultStaffMemberRepository("", "ABC123"), $this->getDefaultCoffeeBreakPreferenceRepository());
+        $this->assertEquals('200', $response->getStatusCode());
+    }
+
+    public function testNotifyStaffMemberStaffMemberNotFound()
+    {
+        $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
+
+        $staffMemberRepository = $this->createMock(StaffMemberRepository::class);
+        $staffMemberRepository->expects(self::once())
+            ->method('find')
+            ->willReturn(null);
+
+        $response = $coffeeBreakPreferenceController->notifyStaffMemberAction(1, $staffMemberRepository, $this->createMock(CoffeeBreakPreferenceRepository::class));
+        $this->assertEquals('422', $response->getStatusCode());
+    }
+
+    public function testNotifyStaffMemberPreferenceNotFound()
+    {
+        $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
+
+
+        $response = $coffeeBreakPreferenceController->notifyStaffMemberAction(1, $this->getDefaultStaffMemberRepository("", "ABC123"), $this->createMock(CoffeeBreakPreferenceRepository::class));
+        $this->assertEquals('422', $response->getStatusCode());
+    }
+
+    public function testNotifyStaffMemberActionNoNotificationPreference()
+    {
+        $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
+        $this->expectException(\RuntimeException::class);
+        $response = $coffeeBreakPreferenceController->notifyStaffMemberAction(1, $this->getDefaultStaffMemberRepository("", ""), $this->getDefaultCoffeeBreakPreferenceRepository());
+    }
+
+
     private function getDefaultCoffeeBreakPreferenceRepository()
     {
 
@@ -112,6 +157,21 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
 
         return $coffeeBreakPreferenceRepository;
 
+    }
+
+    private function getDefaultStaffMemberRepository($email, $slackIdentifier)
+    {
+        $staffMemberRepository = $this->createMock(StaffMemberRepository::class);
+
+        $staffMember = new StaffMember();
+        $staffMember->setEmail($email);
+        $staffMember->setSlackIdentifier($slackIdentifier);
+
+        $staffMemberRepository->expects(self::once())
+            ->method('find')
+            ->willReturn($staffMember);
+
+        return $staffMemberRepository;
     }
 
 }
