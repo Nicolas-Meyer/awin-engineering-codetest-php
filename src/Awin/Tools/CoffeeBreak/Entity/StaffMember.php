@@ -53,7 +53,7 @@ class StaffMember
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -81,7 +81,7 @@ class StaffMember
     /**
      * @return string
      */
-    public function getSlackIdentifier(): string
+    public function getSlackIdentifier(): ?string
     {
         return $this->SlackIdentifier;
     }

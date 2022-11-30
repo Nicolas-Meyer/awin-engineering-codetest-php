@@ -51,7 +51,7 @@ class CoffeeBreakPreference
      * @ORM\Column(name="details", type="json")
      * @var array
      */
-    private $details = [];
+    private $details = "";
 
     public function __construct($type, $subType, StaffMember $requestedBy, array $details = [])
     {
@@ -70,7 +70,7 @@ class CoffeeBreakPreference
         }
 
         $this->type = $type;
-
+        $this->subType = $subType;
         $this->requestedBy = $requestedBy;
         $this->setDetails($details);
     }
@@ -126,7 +126,7 @@ class CoffeeBreakPreference
     /**
      * @return \DateTime
      */
-    public function getRequestedDate(): \DateTime
+    public function getRequestedDate(): ? \DateTime
     {
         return $this->requestedDate;
     }
@@ -143,52 +143,59 @@ class CoffeeBreakPreference
 
     public function setDetails(array $details)
     {
+        $parsedDetails = [];
+
         if ($this->type == "drink") {
-            $this->details["number_of_sugars"] = isset($details["number_of_sugars"]) ?? 0;
-            $this->details["milk"] = isset($details["milk"]) ?? false;
+            $parsedDetails["number_of_sugars"] = isset($details["number_of_sugars"]) ?? 0;
+            $parsedDetails["milk"] = isset($details["milk"]) ?? false;
         } else {
-            $this->details["flavour"] = isset($details["flavour"]) ?? "don't mind";
+            $parsedDetails["flavour"] = isset($details["flavour"]) ?? "don't mind";
         }
+
+        $this->details = json_encode($parsedDetails);
     }
 
-    public function getDetails(): array
+    public function getDetails(): ?string
     {
         return $this->details;
     }
 
-    public function getAsXmlElement(): string
-    {
-        $xml = "<preference type='".$this->getType()."' subtype='".$this->getSubType()."'>";
-        $xml .= "<requestedBy>".$this->getRequestedBy()->getName()."</requestedBy>";
-        $xml .= "<details>".$this->getDetails()."</details>";
-        $xml .= "</preference>";
-        return $xml;
-    }
-
-    public function getAsArray(): array
-    {
-        return [
-            "type" => $this->getType(),
-            "subType" => $this->getSubType(),
-            "requestedBy" => [
-                "name" => $this->getRequestedBy()->getName()
-            ],
-            "details" => $this->getDetails()
-        ];
-    }
-
-    public function getAsListElement(): string
-    {
-        $detailsString = implode(
-            ",",
-            array_map(
-                function ($detailKey, $detailValue) {
-                    return "$detailKey : $detailValue";
-                },
-                array_keys($this->getDetails()),
-                array_values($this->getDetails())
-            )
-        );
-        return "<li>".$this->getRequestedBy()->getName()." would like a ".$this->getSubtype()." ($detailsString)</li>";
-    }
+//    public function getAsXmlElement(): string
+//    {
+//        $xml = "<preference type='".$this->getType()."' subtype='".$this->getSubType()."'>";
+//        $xml .= "<requestedBy>".$this->getRequestedBy()->getName()."</requestedBy>";
+//        $xml .= "<details>".$this->getDetails()."</details>";
+//        $xml .= "</preference>";
+//        return $xml;
+//    }
+//
+//    public function getAsArray(): array
+//    {
+//        return [
+//            "type" => $this->getType(),
+//            "subType" => $this->getSubType(),
+//            "requestedBy" => [
+//                "name" => $this->getRequestedBy()->getName()
+//            ],
+//            "details" => $this->getDetails()
+//        ];
+//    }
+//
+//
+//    public function getAsListElement(): string
+//    {
+//        $details = json_decode($this->getDetails(), true);
+//
+//        $detailsString = implode(
+//            ",",
+//            array_map(
+//                function ($detailKey, $detailValue) {
+//                    return "$detailKey : $detailValue";
+//                },
+//                array_keys($details),
+//                array_values($details)
+//            )
+//        );
+//        return "<li>".$this->getRequestedBy()->getName()." would like a ".$this->getSubtype()." ($detailsString)</li>";
+//    }
 }

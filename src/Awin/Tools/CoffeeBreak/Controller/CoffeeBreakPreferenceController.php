@@ -5,6 +5,10 @@ use Awin\Tools\CoffeeBreak\Repository\CoffeeBreakPreferenceRepository;
 use Awin\Tools\CoffeeBreak\Repository\StaffMemberRepository;
 use Awin\Tools\CoffeeBreak\Services\SlackNotifier;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class CoffeeBreakPreferenceController
 {
@@ -15,25 +19,28 @@ class CoffeeBreakPreferenceController
     public function todayAction($format, CoffeeBreakPreferenceRepository $coffeeBreakPreferenceRepository): Response
     {
 
-        if ('' == $format || null == $format) {
+        if (empty($format)) {
             $format = 'html';
         }
 
         $preferencesForToday = $coffeeBreakPreferenceRepository->getPreferencesForToday();
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
 
+        $serializer = new Serializer($normalizers, $encoders);
         switch ($format) {
             case "json":
-                $responseContent = $this->getJsonForResponse($preferencesForToday);
+                $responseContent = $serializer->serialize($preferencesForToday, 'json');
                 $contentType = "application/json";
                 break;
 
             case "xml":
-                $responseContent = $this->getXmlForResponse($preferencesForToday);
+                $responseContent = $serializer->serialize($preferencesForToday, 'xml');
                 $contentType = "text/xml";
                 break;
 
             case "html":
-                $responseContent = $this->getHtmlForResponse($preferencesForToday);
+                $responseContent = "Html output not yet supported";
                 $contentType = "text/html";
                 break;
 
@@ -42,6 +49,7 @@ class CoffeeBreakPreferenceController
         }
 
         return new Response($responseContent, 200, ['Content-Type' => $contentType]);
+
     }
 
     /**
@@ -52,7 +60,7 @@ class CoffeeBreakPreferenceController
     {
         $staffMember = $staffMemberRepository->find($staffMemberId);
 
-        $preference = $coffeeBreakPreferenceRepository->getPreferencesForToday($staffMemberId);
+        $preference = $coffeeBreakPreferenceRepository->getPreferencesForToday($staffMemberId)->toArray();
 
         $notifier = new SlackNotifier();
         $notificationSent = $notifier->notifyStaffMember($staffMember, $preference);
@@ -60,27 +68,6 @@ class CoffeeBreakPreferenceController
         return new Response($notificationSent ? "OK" : "NOT OK", 200);
     }
 
-    private function getJsonForResponse(array $preferences)
-    {
-        return json_encode([
-            "preferences" => array_map(
-                function ($preference) {
-                    return $preference->getAsArray();
-                },
-                $preferences
-            )
-        ]);
-    }
-
-    private function getXmlForResponse(array $preferences)
-    {
-        $preferencesNode = new \SimpleXMLElement("preferences");
-        foreach ($preferences as $preference) {
-            $preferencesNode->addChild($preference->getAsXmlNode());
-        }
-
-        return $preferencesNode->asXML();
-    }
 
     private function getHtmlForResponse(array $preferences): string
     {
