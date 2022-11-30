@@ -36,6 +36,8 @@ Before going to production, the product should also be fully setup of course - i
 I'm looking forward to discuss all of this. I'm sure this will raise a lot of questions, and I'll be happy to explore all of this more in depth.
 I do feel like the time constraint was a little short to actually get to a satisfying result!
 
+Only tests are runnable at the moment - in case of doubt, after a composer install, you should be able to run `php vendor/phpunit/phpunit/phpunit src/Awin/Tools/CoffeeBreak/Tests/`
+
 ## Manifest
 - `Controller\CoffeeBreakPreferenceController`
 - `Entity\CoffeeBreakPreference`
