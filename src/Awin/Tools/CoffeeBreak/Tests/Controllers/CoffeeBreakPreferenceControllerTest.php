@@ -15,8 +15,25 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
     {
         $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
         $response = $coffeeBreakPreferenceController->todayAction('json', $this->getDefaultCoffeeBreakPreferenceRepository());
+
+        $expected = '
+        {
+            "type": "food",
+            "subType": "toast",
+            "requestedBy": {
+                "name": null,
+                "SlackIdentifier": "ABC123",
+                "preferences": [
+      
+                ]
+            },
+            "requestedDate": null,
+            "details": "{\"flavour\":false}"
+        }';
+
         $this->assertEquals('200', $response->getStatusCode());
         $this->assertJson($response->getContent());
+        $this->assertJsonStringEqualsJsonString($expected, $response->getContent());
      }
 
     public function testTodayActionReturnsXml()
