@@ -24,7 +24,22 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
         $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
         $response = $coffeeBreakPreferenceController->todayAction('xml', $this->getDefaultCoffeeBreakPreferenceRepository());
         $this->assertEquals('200', $response->getStatusCode());
-        $this->assertXmlStringEqualsXmlString('<expectedXml/>', $response->getContent());
+
+        $expected = '
+            <response>
+                <type>food</type>
+                <subType>toast</subType>
+                <requestedBy>
+                    <name/>
+                    <SlackIdentifier>ABC123</SlackIdentifier>
+                    <preferences/>
+                </requestedBy>
+                <requestedDate/>
+                <details>{"flavour":false}</details>
+            </response>';
+
+
+    $this->assertXmlStringEqualsXmlString($expected, $response->getContent());
 
     }
 
@@ -33,7 +48,7 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
         $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
         $response = $coffeeBreakPreferenceController->todayAction('html', $this->getDefaultCoffeeBreakPreferenceRepository());
         $this->assertEquals('200', $response->getStatusCode());
-        $this->assertXmlStringEqualsXmlString('<expectedXml/>', $response->getContent());
+        $this->assertStringContainsString('Html output not yet supported', $response->getContent());
 
     }
 
@@ -42,8 +57,7 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
         $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
         $response = $coffeeBreakPreferenceController->todayAction('', $this->getDefaultCoffeeBreakPreferenceRepository());
         $this->assertEquals('200', $response->getStatusCode());
-        $this->assertXmlStringEqualsXmlString('<expectedXml/>', $response->getContent());
-
+        $this->assertStringContainsString('Html output not yet supported', $response->getContent());
     }
 
     public function testTodayThrowsExceptionWhenUnknownFormat()
