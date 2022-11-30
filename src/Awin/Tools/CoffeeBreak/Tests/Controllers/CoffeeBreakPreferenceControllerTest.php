@@ -16,7 +16,7 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
         $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
         $response = $coffeeBreakPreferenceController->todayAction('json', $this->getDefaultCoffeeBreakPreferenceRepository());
 
-        $expected = '
+        $expected = '[
         {
             "type": "food",
             "subType": "toast",
@@ -31,7 +31,7 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
             "details": {
                    "flavour":false
             }
-        }';
+        }]';
 
         $this->assertEquals('200', $response->getStatusCode());
         $this->assertJson($response->getContent());
@@ -42,23 +42,24 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
     {
         $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
         $response = $coffeeBreakPreferenceController->todayAction('xml', $this->getDefaultCoffeeBreakPreferenceRepository());
-        $this->assertEquals('200', $response->getStatusCode());
 
         $expected = '
             <response>
-                <type>food</type>
-                <subType>toast</subType>
-                <requestedBy>
-                    <name/>
-                    <SlackIdentifier>ABC123</SlackIdentifier>
-                    <preferences/>
-                </requestedBy>
-                <requestedDate/>
-                <details><flavour>0</flavour></details>
+                <item key="0">
+                    <type>food</type>
+                    <subType>toast</subType>
+                    <requestedBy>
+                        <name/>
+                        <SlackIdentifier>ABC123</SlackIdentifier>
+                        <preferences/>
+                    </requestedBy>
+                    <requestedDate/>
+                    <details><flavour>0</flavour></details>
+                </item>
             </response>';
 
-
-    $this->assertXmlStringEqualsXmlString($expected, $response->getContent());
+        $this->assertEquals('200', $response->getStatusCode());
+        $this->assertXmlStringEqualsXmlString($expected, $response->getContent());
 
     }
 
@@ -66,8 +67,11 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
     {
         $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
         $response = $coffeeBreakPreferenceController->todayAction('html', $this->getDefaultCoffeeBreakPreferenceRepository());
+
+        $expected = "<ul><li> would like a toast (flavour : )</li></ul>";
+
         $this->assertEquals('200', $response->getStatusCode());
-        $this->assertStringContainsString('Html output not yet supported', $response->getContent());
+        $this->assertStringContainsString($expected, $response->getContent());
 
     }
 
@@ -75,8 +79,11 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
     {
         $coffeeBreakPreferenceController = new CoffeeBreakPreferenceController();
         $response = $coffeeBreakPreferenceController->todayAction('', $this->getDefaultCoffeeBreakPreferenceRepository());
+
+        $expected = "<ul><li> would like a toast (flavour : )</li></ul>";
+
         $this->assertEquals('200', $response->getStatusCode());
-        $this->assertStringContainsString('Html output not yet supported', $response->getContent());
+        $this->assertStringContainsString($expected, $response->getContent());
     }
 
     public function testTodayThrowsExceptionWhenUnknownFormat()
@@ -94,10 +101,12 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
         $staffMember = new StaffMember();
         $staffMember->setSlackIdentifier("ABC123");
 
+        $result[] = new CoffeeBreakPreference('food','toast', $staffMember);
+
         $coffeeBreakPreferenceRepository = $this->createMock(CoffeeBreakPreferenceRepository::class);
         $coffeeBreakPreferenceRepository->expects(self::once())
             ->method('getPreferencesForToday')
-            ->willReturn(new CoffeeBreakPreference('food','toast', $staffMember));
+            ->willReturn($result);
 
         return $coffeeBreakPreferenceRepository;
 

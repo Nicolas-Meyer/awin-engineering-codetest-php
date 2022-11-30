@@ -157,7 +157,7 @@ class CoffeeBreakPreference
 
     public function getDetails()
     {
-        return json_decode($this->details);
+        return json_decode($this->details, true);
     }
 
 //    public function getAsXmlElement(): string
@@ -182,20 +182,20 @@ class CoffeeBreakPreference
 //    }
 //
 //
-//    public function getAsListElement(): string
-//    {
-//        $details = json_decode($this->getDetails(), true);
-//
-//        $detailsString = implode(
-//            ",",
-//            array_map(
-//                function ($detailKey, $detailValue) {
-//                    return "$detailKey : $detailValue";
-//                },
-//                array_keys($details),
-//                array_values($details)
-//            )
-//        );
-//        return "<li>".$this->getRequestedBy()->getName()." would like a ".$this->getSubtype()." ($detailsString)</li>";
-//    }
+    public function getAsListElement(): string
+    {
+        $details = $this->getDetails();
+
+        $detailsString = implode(
+            ",",
+            array_map(
+                function ($detailKey, $detailValue) {
+                    return "$detailKey : $detailValue";
+                },
+                array_keys($details),
+                array_values($details)
+            )
+        );
+        return "<li>".$this->getRequestedBy()->getName()." would like a ".$this->getSubtype()." ($detailsString)</li>";
+    }
 }

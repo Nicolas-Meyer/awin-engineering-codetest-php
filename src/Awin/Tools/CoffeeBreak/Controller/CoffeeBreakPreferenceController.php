@@ -7,6 +7,7 @@ use Awin\Tools\CoffeeBreak\Services\SlackNotifier;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -30,17 +31,17 @@ class CoffeeBreakPreferenceController
         $serializer = new Serializer($normalizers, $encoders);
         switch ($format) {
             case "json":
-                $responseContent = $serializer->serialize($preferencesForToday, 'json');
+                $responseContent = $serializer->serialize($preferencesForToday, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['asListElement']]);
                 $contentType = "application/json";
                 break;
 
             case "xml":
-                $responseContent = $serializer->serialize($preferencesForToday, 'xml');
+                $responseContent = $serializer->serialize($preferencesForToday, 'xml', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['asListElement']]);
                 $contentType = "text/xml";
                 break;
 
             case "html":
-                $responseContent = "Html output not yet supported";
+                $responseContent = $this->getHtmlForResponse($preferencesForToday);
                 $contentType = "text/html";
                 break;
 

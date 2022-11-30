@@ -13,6 +13,7 @@ class CoffeeBreakPreferenceRepository extends EntityRepository
             ->setParameter("from", new \DateTime("today"))
             ->setParameter("to", new \DateTime("tomorrow"))
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
     }
+
 }
