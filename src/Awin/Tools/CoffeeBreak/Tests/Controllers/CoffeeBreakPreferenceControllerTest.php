@@ -23,6 +23,7 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
             "requestedBy": {
                 "name": null,
                 "SlackIdentifier": "ABC123",
+                "email": null,
                 "preferences": [
       
                 ]
@@ -50,6 +51,7 @@ class CoffeeBreakPreferenceControllerTest extends TestCase
                     <subType>toast</subType>
                     <requestedBy>
                         <name/>
+                        <email/>
                         <SlackIdentifier>ABC123</SlackIdentifier>
                         <preferences/>
                     </requestedBy>
